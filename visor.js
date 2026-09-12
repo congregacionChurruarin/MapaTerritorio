@@ -861,9 +861,7 @@ function activarClicManzanas() {
     }
 
     const manzanas =
-        svg.querySelectorAll(
-            "path[data-manzana]"
-        );
+        svg.querySelectorAll("path[data-manzana]");
 
     console.log(
         "MANZANAS PARA CLIC:",
@@ -874,41 +872,25 @@ function activarClicManzanas() {
 
         manzana.style.cursor = "pointer";
 
-        manzana.addEventListener(
-            "click",
-            function(e) {
+        manzana.addEventListener("click", function(e) {
 
-                e.stopPropagation();
+            e.stopPropagation();
 
-                const nombre =
-                    manzana.getAttribute(
-                        "data-manzana"
-                    );
+            const nombre =
+                manzana.getAttribute("data-manzana");
 
-                console.log(
-                    "MANZANA SELECCIONADA:",
-                    nombre
-                );
+            console.log(
+                "MANZANA SELECCIONADA:",
+                nombre
+            );
 
-                // =========================
-                // ESPERAR DATOS DE SHEETS
-                // =========================
+            mostrarInformacionManzana(
+                nombre,
+                e.clientX,
+                e.clientY
+            );
 
-                if (datosManzanas.length === 0) {
-
-                    console.log(
-                        "LOS DATOS TODAVÍA NO ESTÁN CARGADOS"
-                    );
-
-                    return;
-                }
-
-                mostrarInformacionManzana(
-                    nombre
-                );
-
-            }
-        );
+        });
 
     });
 }
