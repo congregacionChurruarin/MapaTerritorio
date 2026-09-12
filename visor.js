@@ -899,79 +899,43 @@ capturaZoom.addEventListener("mouseup", function(e) {
 });
 
 
-// ========================================
-// DETECTAR MANZANA
-// ========================================
-
 function detectarManzana(clientX, clientY, posicionX = null, posicionY = null) {
 
     if (!svg) return;
 
-    // ==================================
-    // CONVERTIR CLIC/TOQUE A COORDENADAS SVG
-    // ==================================
+    // Elemento <svg> real
+    const svgElement = svg.documentElement;
 
-    const rect = objetoSVG.getBoundingClientRect();
+    if (!svgElement) return;
 
-    const viewBox =
-        svg.documentElement.viewBox.baseVal;
-
-    const x =
-        (clientX - rect.left) /
-        rect.width *
-        viewBox.width;
-
-    const y =
-        (clientY - rect.top) /
-        rect.height *
-        viewBox.height;
-
-    console.log("COORDENADAS SVG:", x, y);
-
-    // ==================================
-    // CREAR PUNTO SVG
-    // ==================================
-
-    const punto =
-        svg.createSVGPoint();
-
-    punto.x = x;
-    punto.y = y;
-
-    // ==================================
-    // BUSCAR MANZANA REALMENTE TOCADA
-    // ==================================
-
+    // Buscar la manzana que realmente está debajo del click
     const elementos =
-        svg.querySelectorAll(
-            "path[data-manzana]"
-        );
+        svg.querySelectorAll("path[data-manzana]");
 
     for (const manzana of elementos) {
 
-        // Convertir el punto a las coordenadas
-        // internas de esta manzana
-        const matriz =
-            manzana.getScreenCTM();
+        const matriz = manzana.getScreenCTM();
 
         if (!matriz) continue;
 
-        const puntoLocal =
-            punto.matrixTransform(
-                matriz.inverse()
-            );
+        // Crear un punto usando el elemento SVG
+        const punto = svgElement.createSVGPoint();
 
-        // Comprobar si el punto está
-        // realmente dentro del path
+        punto.x = clientX;
+        punto.y = clientY;
+
+        // Convertir el punto a las coordenadas de la manzana
+        const puntoLocal =
+            punto.matrixTransform(matriz.inverse());
+
+        // Comprobar si el punto está dentro de la manzana
         if (
             manzana.isPointInFill &&
             manzana.isPointInFill(puntoLocal)
         ) {
 
             const nombre =
-                manzana.getAttribute(
-                    "data-manzana"
-                );
+                manzana.getAttribute("data-manzana");
 
             console.log(
                 "MANZANA CORRECTA:",
@@ -980,15 +944,13 @@ function detectarManzana(clientX, clientY, posicionX = null, posicionY = null) {
 
             mostrarInformacionManzana(
                 nombre,
-                posicionX,
-                posicionY
+                posicionX !== null ? posicionX : clientX,
+                posicionY !== null ? posicionY : clientY
             );
 
             return;
         }
     }
 
-    console.log(
-        "NO SE ENCONTRÓ MANZANA"
-    );
+    console.log("NO SE ENCONTRÓ MANZANA");
 }
