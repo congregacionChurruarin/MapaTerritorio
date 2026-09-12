@@ -903,12 +903,15 @@ function detectarManzana(clientX, clientY, posicionX = null, posicionY = null) {
 
     if (!svg) return;
 
-    // Elemento <svg> real
     const svgElement = svg.documentElement;
 
     if (!svgElement) return;
 
-    // Buscar la manzana que realmente está debajo del click
+    const punto = svgElement.createSVGPoint();
+
+    punto.x = clientX;
+    punto.y = clientY;
+
     const elementos =
         svg.querySelectorAll("path[data-manzana]");
 
@@ -918,17 +921,9 @@ function detectarManzana(clientX, clientY, posicionX = null, posicionY = null) {
 
         if (!matriz) continue;
 
-        // Crear un punto usando el elemento SVG
-        const punto = svgElement.createSVGPoint();
-
-        punto.x = clientX;
-        punto.y = clientY;
-
-        // Convertir el punto a las coordenadas de la manzana
         const puntoLocal =
             punto.matrixTransform(matriz.inverse());
 
-        // Comprobar si el punto está dentro de la manzana
         if (
             manzana.isPointInFill &&
             manzana.isPointInFill(puntoLocal)
