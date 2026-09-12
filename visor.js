@@ -706,81 +706,48 @@ function actualizarNombresCalles() {
 }
 
 
-
-// ========================================
-// MOSTRAR INFORMACIÓN
-// ========================================
-
-function mostrarInformacionManzana(nombre, posicionX = null, posicionY = null)  {
+function mostrarInformacionManzana(nombre, posicionX = null, posicionY = null) {
 
     console.log("================================");
     console.log("MANZANA CLIC:", nombre);
-    console.log("DATOS CARGADOS:", datosManzanas);
     console.log("CANTIDAD DE DATOS:", datosManzanas.length);
     console.log("================================");
 
-    // ==================================
-    // COMPROBAR QUE SHEETS CARGÓ
-    // ==================================
-
     if (!datosManzanas.length) {
-
-        console.log(
-            "LOS DATOS DE GOOGLE SHEETS TODAVÍA NO ESTÁN CARGADOS"
-        );
-
+        console.log("LOS DATOS DE GOOGLE SHEETS TODAVÍA NO ESTÁN CARGADOS");
         return;
     }
 
-    // ==================================
-    // NORMALIZAR MANZANA DEL SVG
-    // ==================================
-
+    // Normalizar el nombre de la manzana
     const manzanaClic =
         String(nombre || "")
             .trim()
             .toUpperCase()
             .replace(/\s+/g, "");
 
-    // ==================================
-    // BUSCAR EN GOOGLE SHEETS
-    // ==================================
-
-   const dato =
-    datosManzanas.find(fila => {
-
-        if (!fila || !fila.manzana) {
-            return false;
-        }
+    // Buscar exactamente esa manzana en Google Sheets
+    const dato = datosManzanas.find(fila => {
 
         const manzanaPlanilla =
-            String(fila.manzana)
+            String(fila.manzana || "")
                 .trim()
                 .toUpperCase()
                 .replace(/\s+/g, "");
 
         return manzanaPlanilla === manzanaClic;
     });
+
     console.log("DATO ENCONTRADO:", dato);
 
-    // ==================================
-    // SI NO EXISTE
-    // ==================================
-
     if (!dato) {
-
         console.log(
             "NO SE ENCONTRÓ LA MANZANA:",
             manzanaClic
         );
-
         return;
     }
 
-    // ==================================
-    // CREAR VENTANA
-    // ==================================
-
+    // Crear ventana
     let ventana =
         document.getElementById("infoManzana");
 
@@ -793,17 +760,19 @@ function mostrarInformacionManzana(nombre, posicionX = null, posicionY = null)  
 
         document.body.appendChild(ventana);
     }
+
+    // Posición donde se hizo click
     if (posicionX !== null && posicionY !== null) {
 
-    ventana.style.position = "fixed";
-    ventana.style.left = posicionX + "px";
-    ventana.style.top = posicionY + "px";
-}
+        ventana.style.position = "fixed";
+        ventana.style.left =
+            (posicionX + 10) + "px";
 
-    // ==================================
-    // MOSTRAR DATOS DE SHEETS
-    // ==================================
+        ventana.style.top =
+            (posicionY + 10) + "px";
+    }
 
+    // Datos de la fila de Google Sheets
     ventana.innerHTML = `
 
         <div class="cerrarInfo"
