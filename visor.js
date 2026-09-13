@@ -819,50 +819,7 @@ function cerrarInformacion() {
     }
 }
 
-// ========================================
-// CLIC DIRECTO EN MANZANAS
-// ========================================
-function activarClicManzanas() {
 
-    if (!svg) {
-        console.log("SVG NO DISPONIBLE");
-        return;
-    }
-
-    const manzanas =
-        svg.querySelectorAll("path[data-manzana]");
-
-    console.log(
-        "MANZANAS PARA CLIC:",
-        manzanas.length
-    );
-
-    manzanas.forEach(manzana => {
-
-        manzana.style.cursor = "pointer";
-
-        manzana.addEventListener("click", function(e) {
-
-            e.stopPropagation();
-
-            const nombre =
-                manzana.getAttribute("data-manzana");
-
-            console.log(
-                "MANZANA SELECCIONADA:",
-                nombre
-            );
-
-            mostrarInformacionManzana(
-                nombre,
-                e.clientX,
-                e.clientY
-            );
-
-        });
-
-    });
-}
 // ========================================
 // CLIC EN MANZANA
 // ========================================
