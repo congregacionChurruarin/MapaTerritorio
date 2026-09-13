@@ -863,42 +863,6 @@ function activarClicManzanas() {
 
     });
 }
-// ========================================
-// CLIC EN MANZANA
-// ========================================
-
-let clicX = 0;
-let clicY = 0;
-
-capturaZoom.addEventListener("mousedown", function(e) {
-
-    clicX = e.clientX;
-    clicY = e.clientY;
-
-});
-
-
-capturaZoom.addEventListener("mouseup", function(e) {
-
-    const diferenciaX =
-        Math.abs(e.clientX - clicX);
-
-    const diferenciaY =
-        Math.abs(e.clientY - clicY);
-
-    // Si se movió, es un arrastre
-    if (
-        diferenciaX > 5 ||
-        diferenciaY > 5
-    ) {
-        return;
-    }
-
-    detectarManzana(e.clientX, e.clientY);
-
-});
-
-
 function detectarManzana(clientX, clientY, posicionX = null, posicionY = null) {
 
     if (!svg) return;
