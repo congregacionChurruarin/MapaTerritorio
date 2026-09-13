@@ -870,3 +870,40 @@ function detectarManzana(clientX, clientY, posicionX = null, posicionY = null) {
 
     console.log("NO SE ENCONTRÓ MANZANA");
 }
+// ========================================
+// CLIC DEL MOUSE EN EL MAPA
+// ========================================
+
+let clicInicialX = 0;
+let clicInicialY = 0;
+
+capturaZoom.addEventListener("mousedown", function(e) {
+
+    clicInicialX = e.clientX;
+    clicInicialY = e.clientY;
+
+});
+
+capturaZoom.addEventListener("mouseup", function(e) {
+
+    const diferenciaX =
+        Math.abs(e.clientX - clicInicialX);
+
+    const diferenciaY =
+        Math.abs(e.clientY - clicInicialY);
+
+    // Si se movió, fue arrastre
+    if (diferenciaX > 5 || diferenciaY > 5) {
+        return;
+    }
+
+    console.log("CLIC EN EL MAPA:", e.clientX, e.clientY);
+
+    detectarManzana(
+        e.clientX,
+        e.clientY,
+        e.clientX,
+        e.clientY
+    );
+
+});
