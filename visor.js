@@ -42,7 +42,6 @@ objetoSVG.addEventListener("load", () => {
     cargarColores();
 
     actualizarNombresCalles();
-    activarClicManzanas();
 }
     else {
         console.log("NO SE PUDO OBTENER EL DOCUMENTO SVG");
