@@ -907,3 +907,8 @@ capturaZoom.addEventListener("mouseup", function(e) {
     );
 
 });
+capturaZoom.addEventListener("click", function(e) {
+
+    console.log("CAPTURA ZOOM RECIBIÓ CLIC");
+
+});
