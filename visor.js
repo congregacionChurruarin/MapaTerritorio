@@ -58,7 +58,19 @@ function cargarColores() {
 
     console.log("Consultando Google Sheets...");
 
-    fetch(URL)
+   console.log("Consultando Google Sheets...");
+
+fetch(URL + "?t=" + Date.now())
+    .then(r => {
+
+        console.log("HTTP:", r.status);
+
+        if (!r.ok) {
+            throw new Error("Error HTTP: " + r.status);
+        }
+
+        return r.json();
+    })
         .then(r => {
 
             console.log("HTTP:", r.status);
