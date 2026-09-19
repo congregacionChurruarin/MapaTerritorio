@@ -58,21 +58,7 @@ function cargarColores() {
 
     console.log("Consultando Google Sheets...");
 
-   console.log("Consultando Google Sheets...");
-
-fetch(URL + "?t=" + Date.now(), {
-    redirect: "manual"
-})
-    .then(r => {
-
-        console.log("HTTP:", r.status);
-
-        if (!r.ok) {
-            throw new Error("Error HTTP: " + r.status);
-        }
-
-        return r.json();
-    })
+    fetch(URL + "?t=" + Date.now())
         .then(r => {
 
             console.log("HTTP:", r.status);
@@ -88,8 +74,8 @@ fetch(URL + "?t=" + Date.now(), {
 
             console.log("DATOS RECIBIDOS:", datos);
 
-            // Guardamos los datos de Sheets
-            datosManzanas = Array.isArray(datos) ? datos : [];
+            datosManzanas =
+                Array.isArray(datos) ? datos : [];
 
             console.log(
                 "MANZANAS CARGADAS:",
@@ -116,31 +102,35 @@ fetch(URL + "?t=" + Date.now(), {
                 if (!id) return;
 
                 const manzanasSVG =
-    svg.querySelectorAll("path[data-manzana]");
+                    svg.querySelectorAll(
+                        "path[data-manzana]"
+                    );
 
-const manzana =
-    Array.from(manzanasSVG).find(elem => {
+                const manzana =
+                    Array.from(manzanasSVG).find(elem => {
 
-        const nombreSVG =
-            String(
-                elem.getAttribute("data-manzana") || ""
-            )
-                .trim()
-                .toUpperCase()
-                .replace(/\s+/g, "");
+                        const nombreSVG =
+                            String(
+                                elem.getAttribute(
+                                    "data-manzana"
+                                ) || ""
+                            )
+                                .trim()
+                                .toUpperCase()
+                                .replace(/\s+/g, "");
 
-        return nombreSVG === id;
-    });
+                        return nombreSVG === id;
+                    });
 
-if (!manzana) {
+                if (!manzana) {
 
-    console.log(
-        "NO EXISTE EN SVG:",
-        id
-    );
+                    console.log(
+                        "NO EXISTE EN SVG:",
+                        id
+                    );
 
-    return;
-}
+                    return;
+                }
 
                 const color =
                     fila.color || "#ffffff";
