@@ -60,7 +60,9 @@ function cargarColores() {
 
    console.log("Consultando Google Sheets...");
 
-fetch(URL + "?t=" + Date.now())
+fetch(URL + "?t=" + Date.now(), {
+    redirect: "manual"
+})
     .then(r => {
 
         console.log("HTTP:", r.status);
