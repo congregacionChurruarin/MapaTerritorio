@@ -842,22 +842,55 @@ function detectarManzana(clientX, clientY, posicionX = null, posicionY = null) {
 
     if (!svgElement) return;
 
-    const punto = svgElement.createSVGPoint();
+    // ========================================
+    // CORREGIR COORDENADAS SEGÚN ZOOM
+    // ========================================
 
-    punto.x = clientX;
-    punto.y = clientY;
+    const rectVisor =
+        visor.getBoundingClientRect();
+
+    // Posición del clic dentro del visor
+    const xVisor =
+        clientX - rectVisor.left;
+
+    const yVisor =
+        clientY - rectVisor.top;
+
+    // Quitar desplazamiento y zoom
+    const xMapa =
+        (xVisor - desplazamientoX) / zoom;
+
+    const yMapa =
+        (yVisor - desplazamientoY) / zoom;
+
+    // Volver a coordenadas de pantalla
+    // que corresponden al SVG sin el transform
+    const xSVG =
+        rectVisor.left + xMapa;
+
+    const ySVG =
+        rectVisor.top + yMapa;
+
+    const punto =
+        svgElement.createSVGPoint();
+
+    punto.x = xSVG;
+    punto.y = ySVG;
 
     const elementos =
         svg.querySelectorAll("path[data-manzana]");
 
     for (const manzana of elementos) {
 
-        const matriz = manzana.getScreenCTM();
+        const matriz =
+            manzana.getScreenCTM();
 
         if (!matriz) continue;
 
         const puntoLocal =
-            punto.matrixTransform(matriz.inverse());
+            punto.matrixTransform(
+                matriz.inverse()
+            );
 
         if (
             manzana.isPointInFill &&
@@ -865,7 +898,9 @@ function detectarManzana(clientX, clientY, posicionX = null, posicionY = null) {
         ) {
 
             const nombre =
-                manzana.getAttribute("data-manzana");
+                manzana.getAttribute(
+                    "data-manzana"
+                );
 
             console.log(
                 "MANZANA CORRECTA:",
@@ -874,15 +909,21 @@ function detectarManzana(clientX, clientY, posicionX = null, posicionY = null) {
 
             mostrarInformacionManzana(
                 nombre,
-                posicionX !== null ? posicionX : clientX,
-                posicionY !== null ? posicionY : clientY
+                posicionX !== null
+                    ? posicionX
+                    : clientX,
+                posicionY !== null
+                    ? posicionY
+                    : clientY
             );
 
             return;
         }
     }
 
-    console.log("NO SE ENCONTRÓ MANZANA");
+    console.log(
+        "NO SE ENCONTRÓ MANZANA"
+    );
 }
 // ========================================
 // CLIC DEL MOUSE EN EL MAPA
