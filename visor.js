@@ -788,8 +788,8 @@ function mostrarInformacionManzana(nombre, posicionX = null, posicionY = null) {
         </h3>
 
         <p>
-            <b>Responsable:</b><br>
-            ${dato.responsable || "-"}
+            <b>Asignado a:</b><br>
+             ${dato.responsable || "-"}
         </p>
 
         <p>
