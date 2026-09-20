@@ -272,8 +272,7 @@ body{
 #svgMapa1,
 #svgMapa2 {
     display: block;
-    width: auto;
-    height: auto;
+
     pointer-events: none;
 }
 
