@@ -1,16 +1,10 @@
 const URL =
 "https://script.google.com/macros/s/AKfycbwEABkKEpSezvJ82on1MLBSkwXULYt12PKgbzD1ujdph9BhS8cL3oHrmJnO0tV66IOupQ/exec";
-const colores = {
-    rojo: "#ff0000",
-    verde: "rgb(0, 170, 0)",
-    amarillo: "#ffff00",
-    azul: "#0080ff",
-    gris: "#cccccc",
-    blanco: "#ffffff"
-};
 
-const objetoSVG =
-    document.getElementById("svgMapa");
+
+// ========================================
+// ELEMENTOS
+// ========================================
 
 const visor =
     document.getElementById("visor");
@@ -18,64 +12,253 @@ const visor =
 const capturaZoom =
     document.getElementById("capturaZoom");
 
-const mapaTransformado =
-    document.getElementById("mapaTransformado");
+const objetoSVG1 =
+    document.getElementById("svgMapa1");
 
-let svg = null;
+const objetoSVG2 =
+    document.getElementById("svgMapa2");
+
+const mapaTransformado1 =
+    document.getElementById("mapaTransformado1");
+
+const mapaTransformado2 =
+    document.getElementById("mapaTransformado2");
+
+const mapaPlano1 =
+    document.getElementById("mapaPlano1");
+
+const mapaPlano2 =
+    document.getElementById("mapaPlano2");
+
+const botonPlano1 =
+    document.getElementById("botonPlano1");
+
+const botonPlano2 =
+    document.getElementById("botonPlano2");
+
+
+// ========================================
+// SVG
+// ========================================
+
+let svg1 = null;
+let svg2 = null;
+
 let datosManzanas = [];
 
+
 // ========================================
-// CARGAR PLANO
+// PLANO ACTIVO
 // ========================================
 
-objetoSVG.addEventListener("load", () => {
+let planoActivo = 1;
 
-    console.log("EVENTO LOAD DEL SVG");
 
-    svg = objetoSVG.contentDocument;
+// ========================================
+// ZOOM PLANO 1
+// ========================================
 
-    console.log("DOCUMENTO SVG:", svg);
+let zoom1 = 1;
+let desplazamientoX1 = 0;
+let desplazamientoY1 = 0;
 
-    if (svg) {
-    console.log("PLANO SVG CARGADO CORRECTAMENTE");
 
-    cargarColores();
+// ========================================
+// ZOOM PLANO 2
+// ========================================
 
-    actualizarNombresCalles();
+let zoom2 = 1;
+let desplazamientoX2 = 0;
+let desplazamientoY2 = 0;
+
+
+// ========================================
+// OBTENER DATOS DEL PLANO ACTIVO
+// ========================================
+
+function obtenerSVG() {
+
+    return planoActivo === 1
+        ? svg1
+        : svg2;
 }
-    else {
-        console.log("NO SE PUDO OBTENER EL DOCUMENTO SVG");
+
+
+function obtenerMapaTransformado() {
+
+    return planoActivo === 1
+        ? mapaTransformado1
+        : mapaTransformado2;
+}
+
+
+function obtenerZoom() {
+
+    return planoActivo === 1
+        ? zoom1
+        : zoom2;
+}
+
+
+function obtenerDesplazamientoX() {
+
+    return planoActivo === 1
+        ? desplazamientoX1
+        : desplazamientoX2;
+}
+
+
+function obtenerDesplazamientoY() {
+
+    return planoActivo === 1
+        ? desplazamientoY1
+        : desplazamientoY2;
+}
+
+
+function establecerTransformacion(
+    nuevoZoom,
+    nuevoX,
+    nuevoY
+) {
+
+    if (planoActivo === 1) {
+
+        zoom1 = nuevoZoom;
+        desplazamientoX1 = nuevoX;
+        desplazamientoY1 = nuevoY;
+
+    } else {
+
+        zoom2 = nuevoZoom;
+        desplazamientoX2 = nuevoX;
+        desplazamientoY2 = nuevoY;
+
+    }
+
+    aplicarTransformacion();
+}
+
+
+// ========================================
+// APLICAR TRANSFORMACIÓN
+// ========================================
+
+function aplicarTransformacion() {
+
+    const mapa =
+        obtenerMapaTransformado();
+
+    const zoom =
+        obtenerZoom();
+
+    const x =
+        obtenerDesplazamientoX();
+
+    const y =
+        obtenerDesplazamientoY();
+
+    mapa.style.transform =
+        `translate(${x}px, ${y}px) scale(${zoom})`;
+}
+
+
+// ========================================
+// CARGAR PLANO 1
+// ========================================
+
+objetoSVG1.addEventListener("load", () => {
+
+    svg1 =
+        objetoSVG1.contentDocument;
+
+    console.log(
+        "PLANO 1 CARGADO:",
+        svg1
+    );
+
+    if (svg1) {
+
+        actualizarNombresCalles(svg1);
+
+        if (!datosManzanas.length) {
+            cargarColores();
+        } else {
+            colorearPlano(svg1, 1);
+        }
     }
 
 });
 
 
 // ========================================
-// COLORES GOOGLE SHEETS
+// CARGAR PLANO 2
+// ========================================
+
+objetoSVG2.addEventListener("load", () => {
+
+    svg2 =
+        objetoSVG2.contentDocument;
+
+    console.log(
+        "PLANO 2 CARGADO:",
+        svg2
+    );
+
+    if (svg2) {
+
+        actualizarNombresCalles(svg2);
+
+        if (datosManzanas.length) {
+            colorearPlano(svg2, 2);
+        }
+    }
+
+});
+
+
+// ========================================
+// CARGAR GOOGLE SHEETS
 // ========================================
 
 function cargarColores() {
 
-    console.log("Consultando Google Sheets...");
+    console.log(
+        "Consultando Google Sheets..."
+    );
 
     fetch(URL + "?t=" + Date.now())
+
         .then(r => {
 
-            console.log("HTTP:", r.status);
+            console.log(
+                "HTTP:",
+                r.status
+            );
 
             if (!r.ok) {
-                throw new Error("Error HTTP: " + r.status);
+
+                throw new Error(
+                    "Error HTTP: " + r.status
+                );
+
             }
 
             return r.json();
+
         })
 
         .then(datos => {
 
-            console.log("DATOS RECIBIDOS:", datos);
+            console.log(
+                "DATOS RECIBIDOS:",
+                datos
+            );
 
             datosManzanas =
-                Array.isArray(datos) ? datos : [];
+                Array.isArray(datos)
+                    ? datos
+                    : [];
 
             console.log(
                 "MANZANAS CARGADAS:",
@@ -87,56 +270,16 @@ function cargarColores() {
                 datosManzanas[0]
             );
 
-            // ==================================
-            // COLOREAR MANZANAS
-            // ==================================
 
-            datosManzanas.forEach(fila => {
+            // Colorear los dos planos
 
-                const id =
-                    String(fila.manzana || "")
-                        .trim()
-                        .toUpperCase()
-                        .replace(/\s+/g, "");
+            if (svg1) {
+                colorearPlano(svg1, 1);
+            }
 
-                if (!id) return;
-
-                const manzanasSVG =
-                    svg.querySelectorAll(
-                        "path[data-manzana]"
-                    );
-
-                const manzana =
-                    Array.from(manzanasSVG).find(elem => {
-
-                        const nombreSVG =
-                            String(
-                                elem.getAttribute(
-                                    "data-manzana"
-                                ) || ""
-                            )
-                                .trim()
-                                .toUpperCase()
-                                .replace(/\s+/g, "");
-
-                        return nombreSVG === id;
-                    });
-
-                if (!manzana) {
-
-                    console.log(
-                        "NO EXISTE EN SVG:",
-                        id
-                    );
-
-                    return;
-                }
-
-                const color =
-                    fila.color || "#ffffff";
-
-                manzana.style.fill = color;
-            });
+            if (svg2) {
+                colorearPlano(svg2, 2);
+            }
 
         })
 
@@ -152,48 +295,137 @@ function cargarColores() {
 
 
 // ========================================
-// COLOREAR MANZANA
+// COLOREAR UN PLANO
 // ========================================
 
-function colorearManzana(id, color) {
+function colorearPlano(svg, numeroPlano) {
 
-    if (!svg)
-        return;
+    if (!svg) return;
 
-    const manzana =
-    svg.querySelector(
-        `path[data-manzana="${id}"]`
-    );
+    datosManzanas.forEach(fila => {
 
-    if (manzana)
+        const id =
+            String(fila.manzana || "")
+                .trim()
+                .toUpperCase()
+                .replace(/\s+/g, "");
+
+        if (!id) return;
+
+
+        const manzanasSVG =
+            svg.querySelectorAll(
+                "path[data-manzana]"
+            );
+
+
+        const manzana =
+            Array.from(manzanasSVG).find(elem => {
+
+                const nombreSVG =
+                    String(
+                        elem.getAttribute(
+                            "data-manzana"
+                        ) || ""
+                    )
+                        .trim()
+                        .toUpperCase()
+                        .replace(/\s+/g, "");
+
+                return nombreSVG === id;
+
+            });
+
+
+        if (!manzana) return;
+
+
+        let color;
+
+        if (numeroPlano === 1) {
+
+            // PLANO 1
+            color =
+                fila.color || "#ffffff";
+
+        } else {
+
+            // PLANO 2
+            color =
+                fila.grupos || "#ffffff";
+
+        }
+
+
         manzana.style.fill = color;
 
-}
-
-
-// ========================================
-// ZOOM Y MOVIMIENTO
-// ========================================
-
-let zoom = 1;
-
-let desplazamientoX = 0;
-let desplazamientoY = 0;
-
-
-// ========================================
-// APLICAR TRANSFORMACIÓN
-// ========================================
-
-function aplicarTransformacion() {
-
-    mapaTransformado.style.transform =
-        `translate(${desplazamientoX}px, ${desplazamientoY}px) scale(${zoom})`;
+    });
 
 }
 
+
 // ========================================
-// ZOOM CON RUEDA
+// CAMBIAR DE PESTAÑA
+// ========================================
+
+botonPlano1.addEventListener(
+    "click",
+    function() {
+
+        planoActivo = 1;
+
+        mapaPlano1.classList.remove(
+            "oculto"
+        );
+
+        mapaPlano2.classList.add(
+            "oculto"
+        );
+
+        botonPlano1.classList.add(
+            "activa"
+        );
+
+        botonPlano2.classList.remove(
+            "activa"
+        );
+
+        aplicarTransformacion();
+
+    }
+);
+
+
+botonPlano2.addEventListener(
+    "click",
+    function() {
+
+        planoActivo = 2;
+
+        mapaPlano1.classList.add(
+            "oculto"
+        );
+
+        mapaPlano2.classList.remove(
+            "oculto"
+        );
+
+        botonPlano1.classList.remove(
+            "activa"
+        );
+
+        botonPlano2.classList.add(
+            "activa"
+        );
+
+        aplicarTransformacion();
+
+    }
+);
+
+
+// ========================================
+// RUEDA DEL MOUSE
 // ========================================
 
 capturaZoom.addEventListener(
@@ -205,7 +437,6 @@ capturaZoom.addEventListener(
         const rect =
             visor.getBoundingClientRect();
 
-        // Cursor dentro del visor
         const mouseX =
             e.clientX - rect.left;
 
@@ -213,52 +444,61 @@ capturaZoom.addEventListener(
             e.clientY - rect.top;
 
 
-        // Punto del mapa debajo del cursor
+        const zoomActual =
+            obtenerZoom();
+
+        const xActual =
+            obtenerDesplazamientoX();
+
+        const yActual =
+            obtenerDesplazamientoY();
+
+
         const mapaX =
-            (
-                mouseX -
-                desplazamientoX
-            ) / zoom;
+            (mouseX - xActual) /
+            zoomActual;
 
         const mapaY =
-            (
-                mouseY -
-                desplazamientoY
-            ) / zoom;
+            (mouseY - yActual) /
+            zoomActual;
 
 
-        // Nuevo zoom
+        let nuevoZoom;
+
         if (e.deltaY < 0) {
 
-            zoom *= 1.15;
+            nuevoZoom =
+                zoomActual * 1.15;
 
         } else {
 
-            zoom /= 1.15;
+            nuevoZoom =
+                zoomActual / 1.15;
 
         }
 
 
-        // Límites
-        zoom =
+        nuevoZoom =
             Math.max(
                 0.5,
-                Math.min(500, zoom)
+                Math.min(500, nuevoZoom)
             );
 
 
-        // Mantener el punto debajo
-        // del cursor
-        desplazamientoX =
+        const nuevoX =
             mouseX -
-            mapaX * zoom;
+            mapaX * nuevoZoom;
 
-        desplazamientoY =
+        const nuevoY =
             mouseY -
-            mapaY * zoom;
+            mapaY * nuevoZoom;
 
 
-        aplicarTransformacion();
+        establecerTransformacion(
+            nuevoZoom,
+            nuevoX,
+            nuevoY
+        );
 
     },
     { passive: false }
@@ -266,7 +506,7 @@ capturaZoom.addEventListener(
 
 
 // ========================================
-// MOUSE - ARRASTRAR
+// ARRASTRE
 // ========================================
 
 let arrastrando = false;
@@ -283,11 +523,17 @@ capturaZoom.addEventListener(
 
         inicioX =
             e.clientX -
-            desplazamientoX;
+            obtenerDesplazamientoX();
 
         inicioY =
             e.clientY -
-            desplazamientoY;
+            obtenerDesplazamientoY();
+
+        clicInicialX =
+            e.clientX;
+
+        clicInicialY =
+            e.clientY;
 
     }
 );
@@ -300,15 +546,19 @@ capturaZoom.addEventListener(
         if (!arrastrando)
             return;
 
-        desplazamientoX =
-            e.clientX -
-            inicioX;
 
-        desplazamientoY =
-            e.clientY -
-            inicioY;
+        const nuevoX =
+            e.clientX - inicioX;
 
-        aplicarTransformacion();
+        const nuevoY =
+            e.clientY - inicioY;
+
+
+        establecerTransformacion(
+            obtenerZoom(),
+            nuevoX,
+            nuevoY
+        );
 
     }
 );
@@ -316,9 +566,37 @@ capturaZoom.addEventListener(
 
 capturaZoom.addEventListener(
     "mouseup",
-    function() {
+    function(e) {
 
         arrastrando = false;
+
+
+        const diferenciaX =
+            Math.abs(
+                e.clientX -
+                clicInicialX
+            );
+
+        const diferenciaY =
+            Math.abs(
+                e.clientY -
+                clicInicialY
+            );
+
+
+        if (
+            diferenciaX <= 5 &&
+            diferenciaY <= 5
+        ) {
+
+            detectarManzana(
+                e.clientX,
+                e.clientY,
+                e.clientX,
+                e.clientY
+            );
+
+        }
 
     }
 );
@@ -335,7 +613,7 @@ capturaZoom.addEventListener(
 
 
 // ========================================
-// TELÉFONO
+// TOUCH
 // ========================================
 
 let dedos = new Map();
@@ -351,17 +629,12 @@ let mapaCentroX = 0;
 let mapaCentroY = 0;
 
 
-// ========================================
-// TOUCH START
-// ========================================
-
 capturaZoom.addEventListener(
     "touchstart",
     function(e) {
 
         e.preventDefault();
 
-        // Guardar los dedos
         dedos.clear();
 
         for (
@@ -381,28 +654,20 @@ capturaZoom.addEventListener(
         }
 
 
-        // ==================================
-        // UN DEDO = MOVER
-        // ==================================
-
         if (e.touches.length === 1) {
 
             arrastrando = true;
 
             inicioX =
                 e.touches[0].clientX -
-                desplazamientoX;
+                obtenerDesplazamientoX();
 
             inicioY =
                 e.touches[0].clientY -
-                desplazamientoY;
+                obtenerDesplazamientoY();
 
         }
 
-
-        // ==================================
-        // DOS DEDOS = PREPARAR ZOOM
-        // ==================================
 
         if (e.touches.length === 2) {
 
@@ -415,7 +680,6 @@ capturaZoom.addEventListener(
                 dedos.get(1);
 
 
-            // Distancia inicial
             distanciaInicial =
                 distanciaEntreDedos(
                     dedo1,
@@ -423,12 +687,13 @@ capturaZoom.addEventListener(
                 );
 
 
-            zoomInicial = zoom;
+            zoomInicial =
+                obtenerZoom();
 
 
-            // Centro inicial
             const rect =
                 visor.getBoundingClientRect();
+
 
             centroInicialX =
                 (
@@ -436,6 +701,7 @@ capturaZoom.addEventListener(
                     dedo2.x
                 ) / 2 -
                 rect.left;
+
 
             centroInicialY =
                 (
@@ -445,19 +711,20 @@ capturaZoom.addEventListener(
                 rect.top;
 
 
-            // Punto del mapa debajo
-            // del centro de los dedos
             mapaCentroX =
                 (
                     centroInicialX -
-                    desplazamientoX
-                ) / zoom;
+                    obtenerDesplazamientoX()
+                ) /
+                obtenerZoom();
+
 
             mapaCentroY =
                 (
                     centroInicialY -
-                    desplazamientoY
-                ) / zoom;
+                    obtenerDesplazamientoY()
+                ) /
+                obtenerZoom();
 
         }
 
@@ -466,10 +733,6 @@ capturaZoom.addEventListener(
 );
 
 
-// ========================================
-// TOUCH MOVE
-// ========================================
-
 capturaZoom.addEventListener(
     "touchmove",
     function(e) {
@@ -477,49 +740,41 @@ capturaZoom.addEventListener(
         e.preventDefault();
 
 
-        // ==================================
-        // UN DEDO = MOVER
-        // ==================================
-
         if (
             e.touches.length === 1 &&
             arrastrando
         ) {
 
-            desplazamientoX =
+            const nuevoX =
                 e.touches[0].clientX -
                 inicioX;
 
-            desplazamientoY =
+            const nuevoY =
                 e.touches[0].clientY -
                 inicioY;
 
-            aplicarTransformacion();
+
+            establecerTransformacion(
+                obtenerZoom(),
+                nuevoX,
+                nuevoY
+            );
 
             return;
+
         }
 
-
-        // ==================================
-        // DOS DEDOS = ZOOM
-        // ==================================
 
         if (e.touches.length === 2) {
 
             const dedo1 = {
-
                 x: e.touches[0].clientX,
-
                 y: e.touches[0].clientY
-
             };
 
             const dedo2 = {
-
                 x: e.touches[1].clientX,
-
                 y: e.touches[1].clientY
-
             };
 
 
@@ -530,12 +785,13 @@ capturaZoom.addEventListener(
                 );
 
 
-            if (distanciaInicial === 0)
+            if (
+                distanciaInicial === 0
+            )
                 return;
 
 
-            // Nuevo zoom
-            zoom =
+            let nuevoZoom =
                 zoomInicial *
                 (
                     distanciaActual /
@@ -543,19 +799,16 @@ capturaZoom.addEventListener(
                 );
 
 
-            zoom =
+            nuevoZoom =
                 Math.max(
                     0.5,
-                    Math.min(500, zoom)
+                    Math.min(500, nuevoZoom)
                 );
 
 
-            // ==================================
-            // CENTRO ACTUAL
-            // ==================================
-
             const rect =
                 visor.getBoundingClientRect();
+
 
             const centroActualX =
                 (
@@ -563,6 +816,7 @@ capturaZoom.addEventListener(
                     dedo2.x
                 ) / 2 -
                 rect.left;
+
 
             const centroActualY =
                 (
@@ -572,21 +826,23 @@ capturaZoom.addEventListener(
                 rect.top;
 
 
-            // ==================================
-            // MANTENER EL MAPA DEBAJO
-            // DEL CENTRO DE LOS DEDOS
-            // ==================================
-
-            desplazamientoX =
+            const nuevoX =
                 centroActualX -
-                mapaCentroX * zoom;
+                mapaCentroX *
+                nuevoZoom;
 
-            desplazamientoY =
+
+            const nuevoY =
                 centroActualY -
-                mapaCentroY * zoom;
+                mapaCentroY *
+                nuevoZoom;
 
 
-            aplicarTransformacion();
+            establecerTransformacion(
+                nuevoZoom,
+                nuevoX,
+                nuevoY
+            );
 
         }
 
@@ -595,42 +851,52 @@ capturaZoom.addEventListener(
 );
 
 
-// ========================================
-// TOUCH END
-// ========================================
-
 capturaZoom.addEventListener(
     "touchend",
     function(e) {
 
-        // ==================================
-// DETECTAR TOQUE EN UNA MANZANA
-// ==================================
+        if (
+            e.changedTouches.length === 1 &&
+            e.touches.length === 0
+        ) {
 
-if (e.changedTouches.length === 1) {
+            const dedo =
+                e.changedTouches[0];
 
-    const dedo = e.changedTouches[0];
 
-    const diferenciaX =
-        Math.abs(dedo.clientX - inicioX - desplazamientoX);
+            const diferenciaX =
+                Math.abs(
+                    dedo.clientX -
+                    inicioX -
+                    obtenerDesplazamientoX()
+                );
 
-    const diferenciaY =
-        Math.abs(dedo.clientY - inicioY - desplazamientoY);
 
-    // Si prácticamente no se movió, es un toque
-    if (
-        diferenciaX < 10 &&
-        diferenciaY < 10
-    ) {
+            const diferenciaY =
+                Math.abs(
+                    dedo.clientY -
+                    inicioY -
+                    obtenerDesplazamientoY()
+                );
 
-        detectarManzana(
-            dedo.clientX,
-            dedo.clientY,
-            dedo.clientX,
-            dedo.clientY
-        );
-    }
-}
+
+            if (
+                diferenciaX < 10 &&
+                diferenciaY < 10
+            ) {
+
+                detectarManzana(
+                    dedo.clientX,
+                    dedo.clientY,
+                    dedo.clientX,
+                    dedo.clientY
+                );
+
+            }
+
+        }
+
+
         if (e.touches.length === 0) {
 
             arrastrando = false;
@@ -642,19 +908,17 @@ if (e.changedTouches.length === 1) {
         }
 
 
-        // Si queda un dedo,
-        // volver a permitir mover
         if (e.touches.length === 1) {
 
             arrastrando = true;
 
             inicioX =
                 e.touches[0].clientX -
-                desplazamientoX;
+                obtenerDesplazamientoX();
 
             inicioY =
                 e.touches[0].clientY -
-                desplazamientoY;
+                obtenerDesplazamientoY();
 
         }
 
@@ -664,7 +928,7 @@ if (e.changedTouches.length === 1) {
 
 
 // ========================================
-// DISTANCIA ENTRE DOS DEDOS
+// DISTANCIA ENTRE DEDOS
 // ========================================
 
 function distanciaEntreDedos(a, b) {
@@ -679,21 +943,22 @@ function distanciaEntreDedos(a, b) {
         dx * dx +
         dy * dy
     );
+
 }
-// ========================================
-// RECALCULAR POSICIÓN Y VISIBILIDAD DE CALLES
-// ========================================
+
 
 // ========================================
-// MOSTRAR NOMBRES DE CALLES
+// NOMBRES DE CALLES
 // ========================================
 
-function actualizarNombresCalles() {
+function actualizarNombresCalles(svg) {
 
     if (!svg) return;
 
     const elementosCalle =
-        svg.querySelectorAll(".nombreCalle");
+        svg.querySelectorAll(
+            ".nombreCalle"
+        );
 
     console.log(
         "NOMBRES DE CALLES ENCONTRADOS:",
@@ -702,80 +967,274 @@ function actualizarNombresCalles() {
 
     elementosCalle.forEach(elem => {
 
-        // Mostrar el nombre exactamente
-        // en la posición que tiene en el SVG
         elem.style.display = "";
+
     });
+
 }
 
 
-function mostrarInformacionManzana(nombre, posicionX = null, posicionY = null) {
+// ========================================
+// DETECTAR MANZANA
+// ========================================
 
-    console.log("================================");
-    console.log("MANZANA CLIC:", nombre);
-    console.log("CANTIDAD DE DATOS:", datosManzanas.length);
-    console.log("================================");
+function detectarManzana(
+    clientX,
+    clientY,
+    posicionX = null,
+    posicionY = null
+) {
 
-    if (!datosManzanas.length) {
-        console.log("LOS DATOS DE GOOGLE SHEETS TODAVÍA NO ESTÁN CARGADOS");
-        return;
+    const svg =
+        obtenerSVG();
+
+    if (!svg) return;
+
+
+    const svgElement =
+        svg.documentElement;
+
+    if (!svgElement) return;
+
+
+    const rectVisor =
+        visor.getBoundingClientRect();
+
+
+    const xVisor =
+        clientX -
+        rectVisor.left;
+
+    const yVisor =
+        clientY -
+        rectVisor.top;
+
+
+    const xMapa =
+        (
+            xVisor -
+            obtenerDesplazamientoX()
+        ) /
+        obtenerZoom();
+
+
+    const yMapa =
+        (
+            yVisor -
+            obtenerDesplazamientoY()
+        ) /
+        obtenerZoom();
+
+
+    const punto =
+        svgElement.createSVGPoint();
+
+
+    const rectSVG =
+        svgElement.getBoundingClientRect();
+
+
+    punto.x =
+        xMapa +
+        rectSVG.left -
+        rectVisor.left;
+
+    punto.y =
+        yMapa +
+        rectSVG.top -
+        rectVisor.top;
+
+
+    const elementos =
+        svg.querySelectorAll(
+            "path[data-manzana]"
+        );
+
+
+    for (
+        const manzana of elementos
+    ) {
+
+        const matriz =
+            manzana.getScreenCTM();
+
+        if (!matriz) continue;
+
+
+        const puntoLocal =
+            punto.matrixTransform(
+                matriz.inverse()
+            );
+
+
+        if (
+            manzana.isPointInFill &&
+            manzana.isPointInFill(
+                puntoLocal
+            )
+        ) {
+
+            const nombre =
+                manzana.getAttribute(
+                    "data-manzana"
+                );
+
+
+            console.log(
+                "MANZANA CORRECTA:",
+                nombre
+            );
+
+
+            mostrarInformacionManzana(
+                nombre,
+                posicionX !== null
+                    ? posicionX
+                    : clientX,
+                posicionY !== null
+                    ? posicionY
+                    : clientY
+            );
+
+
+            return;
+
+        }
+
     }
 
-    // Normalizar el nombre de la manzana
+
+    console.log(
+        "NO SE ENCONTRÓ MANZANA"
+    );
+
+}
+
+
+// ========================================
+// MOSTRAR INFORMACIÓN
+// ========================================
+
+function mostrarInformacionManzana(
+    nombre,
+    posicionX = null,
+    posicionY = null
+) {
+
+    console.log(
+        "================================"
+    );
+
+    console.log(
+        "MANZANA CLIC:",
+        nombre
+    );
+
+    console.log(
+        "CANTIDAD DE DATOS:",
+        datosManzanas.length
+    );
+
+    console.log(
+        "================================"
+    );
+
+
+    if (!datosManzanas.length) {
+
+        console.log(
+            "LOS DATOS DE GOOGLE SHEETS TODAVÍA NO ESTÁN CARGADOS"
+        );
+
+        return;
+
+    }
+
+
     const manzanaClic =
         String(nombre || "")
             .trim()
             .toUpperCase()
             .replace(/\s+/g, "");
 
-    // Buscar exactamente esa manzana en Google Sheets
-    const dato = datosManzanas.find(fila => {
 
-        const manzanaPlanilla =
-            String(fila.manzana || "")
-                .trim()
-                .toUpperCase()
-                .replace(/\s+/g, "");
+    const dato =
+        datosManzanas.find(fila => {
 
-        return manzanaPlanilla === manzanaClic;
-    });
+            const manzanaPlanilla =
+                String(fila.manzana || "")
+                    .trim()
+                    .toUpperCase()
+                    .replace(/\s+/g, "");
 
-    console.log("DATO ENCONTRADO:", dato);
+            return (
+                manzanaPlanilla ===
+                manzanaClic
+            );
+
+        });
+
+
+    console.log(
+        "DATO ENCONTRADO:",
+        dato
+    );
+
 
     if (!dato) {
+
         console.log(
             "NO SE ENCONTRÓ LA MANZANA:",
             manzanaClic
         );
+
         return;
+
     }
 
-    // Crear ventana
+
     let ventana =
-        document.getElementById("infoManzana");
+        document.getElementById(
+            "infoManzana"
+        );
+
 
     if (!ventana) {
 
         ventana =
             document.createElement("div");
 
-        ventana.id = "infoManzana";
+        ventana.id =
+            "infoManzana";
 
-        document.body.appendChild(ventana);
+        document.body.appendChild(
+            ventana
+        );
+
     }
 
-    // Posición donde se hizo click
-    if (posicionX !== null && posicionY !== null) {
 
-        ventana.style.position = "fixed";
+    if (
+        posicionX !== null &&
+        posicionY !== null
+    ) {
+
+        ventana.style.position =
+            "fixed";
+
         ventana.style.left =
-            (posicionX + 10) + "px";
+            (
+                posicionX + 10
+            ) + "px";
 
         ventana.style.top =
-            (posicionY + 10) + "px";
+            (
+                posicionY + 10
+            ) + "px";
+
     }
 
-    // Datos de la fila de Google Sheets
+
     ventana.innerHTML = `
 
         <div class="cerrarInfo"
@@ -789,7 +1248,7 @@ function mostrarInformacionManzana(nombre, posicionX = null, posicionY = null) {
 
         <p>
             <b>Asignado a:</b><br>
-             ${dato.responsable || "-"}
+            ${dato.responsable || "-"}
         </p>
 
         <p>
@@ -803,6 +1262,7 @@ function mostrarInformacionManzana(nombre, posicionX = null, posicionY = null) {
         </p>
 
     `;
+
 }
 
 
@@ -818,142 +1278,17 @@ function cerrarInformacion() {
         );
 
     if (ventana) {
+
         ventana.remove();
+
     }
+
 }
 
 
-
-function detectarManzana(clientX, clientY, posicionX = null, posicionY = null) {
-
-    if (!svg) return;
-
-    const svgElement = svg.documentElement;
-
-    if (!svgElement) return;
-
-    // ========================================
-    // CORREGIR COORDENADAS SEGÚN ZOOM
-    // ========================================
-
-    const rectVisor =
-        visor.getBoundingClientRect();
-
-    // Posición del clic dentro del visor
-    const xVisor =
-        clientX - rectVisor.left;
-
-    const yVisor =
-        clientY - rectVisor.top;
-
-    // Quitar desplazamiento y zoom
-    const xMapa =
-        (xVisor - desplazamientoX) / zoom;
-
-    const yMapa =
-        (yVisor - desplazamientoY) / zoom;
-
-    // Volver a coordenadas de pantalla
-    // que corresponden al SVG sin el transform
-    const xSVG =
-        rectVisor.left + xMapa;
-
-    const ySVG =
-        rectVisor.top + yMapa;
-
-    const punto =
-        svgElement.createSVGPoint();
-
-    punto.x = xSVG;
-    punto.y = ySVG;
-
-    const elementos =
-        svg.querySelectorAll("path[data-manzana]");
-
-    for (const manzana of elementos) {
-
-        const matriz =
-            manzana.getScreenCTM();
-
-        if (!matriz) continue;
-
-        const puntoLocal =
-            punto.matrixTransform(
-                matriz.inverse()
-            );
-
-        if (
-            manzana.isPointInFill &&
-            manzana.isPointInFill(puntoLocal)
-        ) {
-
-            const nombre =
-                manzana.getAttribute(
-                    "data-manzana"
-                );
-
-            console.log(
-                "MANZANA CORRECTA:",
-                nombre
-            );
-
-            mostrarInformacionManzana(
-                nombre,
-                posicionX !== null
-                    ? posicionX
-                    : clientX,
-                posicionY !== null
-                    ? posicionY
-                    : clientY
-            );
-
-            return;
-        }
-    }
-
-    console.log(
-        "NO SE ENCONTRÓ MANZANA"
-    );
-}
 // ========================================
-// CLIC DEL MOUSE EN EL MAPA
+// VARIABLES PARA CLIC
 // ========================================
 
 let clicInicialX = 0;
 let clicInicialY = 0;
-
-capturaZoom.addEventListener("mousedown", function(e) {
-
-    clicInicialX = e.clientX;
-    clicInicialY = e.clientY;
-
-});
-
-capturaZoom.addEventListener("mouseup", function(e) {
-
-    const diferenciaX =
-        Math.abs(e.clientX - clicInicialX);
-
-    const diferenciaY =
-        Math.abs(e.clientY - clicInicialY);
-
-    // Si se movió, fue arrastre
-    if (diferenciaX > 5 || diferenciaY > 5) {
-        return;
-    }
-
-    console.log("CLIC EN EL MAPA:", e.clientX, e.clientY);
-
-    detectarManzana(
-        e.clientX,
-        e.clientY,
-        e.clientX,
-        e.clientY
-    );
-
-});
-capturaZoom.addEventListener("click", function(e) {
-
-    console.log("CAPTURA ZOOM RECIBIÓ CLIC");
-
-});
