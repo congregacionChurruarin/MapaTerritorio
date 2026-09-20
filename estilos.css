@@ -1,168 +1,31 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 html,
-body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
-body{
-    font-family:Arial,Helvetica,sans-serif;
+body {
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-#visor{
-    position:relative;
-    width:100%;
-    height:100vh;
-    height:100dvh;
 
-    overflow:hidden;
-
-    touch-action:none;
-
-    background:#f2f2f2;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-
-#mapaTransformado{
-    width:100%;
-    height:100%;
-
-    transform-origin:0 0;
-}
-
-#svgMapa{
-    display:block;
-
-    width:100%;
-    height:100%;
-
-    object-fit:cover;
-
-    pointer-events:none;
-}
-
-#capturaZoom{
-    position:absolute;
-
-    left:0;
-    top:0;
-
-    width:100%;
-    height:100%;
-
-    z-index:10;
-
-    touch-action:none;
-}
-#mapaTransformado{
-    width:100%;
-    height:100%;
-    transform-origin:0 0;
-}
-
-#svgMapa{
-    width:100%;
-    height:100%;
-    pointer-events:none;
-}
-
-#capturaZoom{
-    position:absolute;
-    left:0;
-    top:0;
-    width:100%;
-    height:100%;
-    z-index:10;
-    touch-action:none;
-}
-#infoManzana {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-
-    width: 140px;
-
-    background: white;
-    border-radius: 8px;
-
-    padding: 10px;
-
-    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-    line-height: 1.2;
-
-    z-index: 1000;
-}
-
-#infoManzana h3 {
-    margin: 0 0 8px 0;
-    font-size: 13px;
-    text-align: center;
-}
-
-#infoManzana p {
-    margin: 5px 0;
-}
-
-#infoManzana b {
-    font-size: 10px;
-}
-
-#infoManzana .cerrarInfo {
-    position: absolute;
-    top: 4px;
-    right: 7px;
-    font-size: 18px;
-    cursor: pointer;
-}
-
-.cerrarInfo {
-    position: absolute;
-
-    top: 8px;
-    right: 12px;
-
-    font-size: 24px;
-
-    cursor: pointer;
-
-    line-height: 1;
-}
-/* CELULARES Y TABLETS */
-@media (max-width: 768px){
-
-    #barra{
-        height:55px;
-    }
-
-    #barra input{
-        width:150px;
-    }
-
-    #panel{
-        width:220px;
-        padding:10px;
-    }
-}
 /* ========================================
-   PESTAÑAS DE LOS PLANOS
+   PESTAÑAS
 ======================================== */
 
 #pestanas {
     position: fixed;
+
     top: 0;
     left: 0;
+
     width: 100%;
     height: 45px;
 
@@ -192,17 +55,39 @@ body{
 
 
 /* ========================================
+   VISOR
+======================================== */
+
+#visor {
+    position: fixed;
+
+    top: 45px;
+    left: 0;
+
+    width: 100%;
+    height: calc(100vh - 45px);
+    height: calc(100dvh - 45px);
+
+    overflow: hidden;
+
+    touch-action: none;
+
+    background: #f2f2f2;
+}
+
+
+/* ========================================
    MAPAS
 ======================================== */
 
 .mapa {
     position: absolute;
 
-    top: 45px;
+    top: 0;
     left: 0;
 
     width: 100%;
-    height: calc(100% - 45px);
+    height: 100%;
 
     overflow: hidden;
 }
@@ -213,16 +98,18 @@ body{
 
 
 /* ========================================
-   TRANSFORMACIONES
+   MAPA TRANSFORMADO
 ======================================== */
 
 #mapaTransformado1,
 #mapaTransformado2 {
-
     position: absolute;
 
-    left: 0;
     top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
 
     transform-origin: 0 0;
 }
@@ -234,67 +121,107 @@ body{
 
 #svgMapa1,
 #svgMapa2 {
-
     display: block;
 
-    pointer-events: none;
-}
-#visor {
-    position: fixed;
-    top: 45px;
-    left: 0;
-    width: 100%;
-    height: calc(100vh - 45px);
-    height: calc(100dvh - 45px);
-    overflow: hidden;
-    touch-action: none;
-    background: #f2f2f2;
-}
-
-#mapaPlano1,
-#mapaPlano2 {
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden;
-}
-
-#mapaTransformado1,
-#mapaTransformado2 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    transform-origin: 0 0;
-}
-
-#svgMapa1,
-#svgMapa2 {
-    position: absolute;
-
-    left: 0;
-    top: 0;
-
-    width: 100vw;
-    height: 100vh;
-
-    display: block;
 
     border: none;
 
     pointer-events: none;
 }
 
+
+/* ========================================
+   CAPTURA ZOOM
+======================================== */
+
 #capturaZoom {
     position: absolute;
-    inset: 0;
-    z-index: 100;
-    background: transparent;
-}
 
-#mapaTransformado1,
-#mapaTransformado2 {
+    top: 0;
+    left: 0;
+
     width: 100%;
     height: 100%;
+
+    z-index: 100;
+
+    background: transparent;
+
+    touch-action: none;
+}
+
+
+/* ========================================
+   INFORMACIÓN MANZANA
+======================================== */
+
+#infoManzana {
+    position: fixed;
+
+    top: 20px;
+    right: 20px;
+
+    width: 140px;
+
+    background: white;
+
+    border-radius: 8px;
+
+    padding: 10px;
+
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+
+    font-family: Arial, sans-serif;
+
+    font-size: 10px;
+
+    line-height: 1.2;
+
+    z-index: 3000;
+}
+
+#infoManzana h3 {
+    margin: 0 0 8px 0;
+
+    font-size: 13px;
+
+    text-align: center;
+}
+
+#infoManzana p {
+    margin: 5px 0;
+}
+
+#infoManzana b {
+    font-size: 10px;
+}
+
+#infoManzana .cerrarInfo {
+    position: absolute;
+
+    top: 4px;
+    right: 7px;
+
+    font-size: 18px;
+
+    cursor: pointer;
+}
+
+
+/* ========================================
+   CELULARES
+======================================== */
+
+@media (max-width: 768px) {
+
+    #pestanas {
+        height: 45px;
+    }
+
+    .pestana {
+        font-size: 14px;
+    }
+
 }
