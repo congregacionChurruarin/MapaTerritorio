@@ -155,3 +155,87 @@ body{
         padding:10px;
     }
 }
+/* ========================================
+   PESTAÑAS DE LOS PLANOS
+======================================== */
+
+#pestanas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 45px;
+
+    display: flex;
+
+    z-index: 2000;
+
+    background: #eeeeee;
+}
+
+.pestana {
+    flex: 1;
+
+    border: none;
+
+    background: #dddddd;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.pestana.activa {
+    background: #ffffff;
+}
+
+
+/* ========================================
+   MAPAS
+======================================== */
+
+.mapa {
+    position: absolute;
+
+    top: 45px;
+    left: 0;
+
+    width: 100%;
+    height: calc(100% - 45px);
+
+    overflow: hidden;
+}
+
+.oculto {
+    display: none;
+}
+
+
+/* ========================================
+   TRANSFORMACIONES
+======================================== */
+
+#mapaTransformado1,
+#mapaTransformado2 {
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    transform-origin: 0 0;
+}
+
+
+/* ========================================
+   SVG
+======================================== */
+
+#svgMapa1,
+#svgMapa2 {
+
+    display: block;
+
+    pointer-events: none;
+}
