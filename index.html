@@ -12,21 +12,61 @@
 
 <body>
 
+    <!-- PESTAÑAS -->
+    <div id="pestanas">
+
+        <button id="botonPlano1" class="pestana activa">
+            PLANO 1
+        </button>
+
+        <button id="botonPlano2" class="pestana">
+            GRUPOS
+        </button>
+
+    </div>
+
+
+    <!-- VISOR -->
+
     <div id="visor">
 
-        <div id="mapaTransformado">
+        <!-- PLANO 1 -->
+        <div id="mapaPlano1" class="mapa">
 
-            <object
-                id="svgMapa"
-                data="plano.svg"
-                type="image/svg+xml">
-            </object>
+            <div id="mapaTransformado1">
+
+                <object
+                    id="svgMapa1"
+                    data="plano.svg"
+                    type="image/svg+xml">
+                </object>
+
+            </div>
 
         </div>
 
+
+        <!-- PLANO 2 -->
+        <div id="mapaPlano2" class="mapa oculto">
+
+            <div id="mapaTransformado2">
+
+                <object
+                    id="svgMapa2"
+                    data="plano.svg"
+                    type="image/svg+xml">
+                </object>
+
+            </div>
+
+        </div>
+
+
+        <!-- CAPTURA ZOOM -->
         <div id="capturaZoom"></div>
 
     </div>
+
 
     <script src="visor.js"></script>
 
