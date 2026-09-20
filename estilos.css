@@ -239,3 +239,47 @@ body{
 
     pointer-events: none;
 }
+#visor {
+    position: fixed;
+    top: 45px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 45px);
+    height: calc(100dvh - 45px);
+    overflow: hidden;
+    touch-action: none;
+    background: #f2f2f2;
+}
+
+#mapaPlano1,
+#mapaPlano2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#mapaTransformado1,
+#mapaTransformado2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+}
+
+#svgMapa1,
+#svgMapa2 {
+    display: block;
+    width: auto;
+    height: auto;
+    pointer-events: none;
+}
+
+#capturaZoom {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    background: transparent;
+}
