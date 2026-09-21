@@ -309,9 +309,6 @@ function colorearPlano(svg, numeroPlano) {
             )
         );
 
-    // Guardar cuántas veces ya usamos cada nombre
-    const usados = {};
-
     datosManzanas.forEach(fila => {
 
         const id =
@@ -322,8 +319,6 @@ function colorearPlano(svg, numeroPlano) {
 
         if (!id) return;
 
-
-        // Buscar TODAS las manzanas con ese nombre
         const coincidencias =
             manzanasSVG.filter(elem => {
 
@@ -338,29 +333,9 @@ function colorearPlano(svg, numeroPlano) {
                         .replace(/\s+/g, "");
 
                 return nombreSVG === id;
-
             });
 
-
         if (!coincidencias.length) return;
-
-
-        // Número de aparición de esta manzana
-        const indice =
-            usados[id] || 0;
-
-        usados[id] = indice + 1;
-
-
-        // Si hay varias iguales, usar la correspondiente
-        const manzana =
-            coincidencias[
-                Math.min(
-                    indice,
-                    coincidencias.length - 1
-                )
-            ];
-
 
         let color;
 
@@ -369,15 +344,26 @@ function colorearPlano(svg, numeroPlano) {
             color =
                 fila.color || "#ffffff";
 
+            // TERRITORIOS:
+            // solo pinta la primera coincidencia
+
+            coincidencias[0].style.fill = color;
+
         } else {
 
             color =
                 fila.grupos || "#ffffff";
 
+            // GRUPOS:
+            // pinta TODAS las coincidencias
+
+            coincidencias.forEach(manzana => {
+
+                manzana.style.fill = color;
+
+            });
+
         }
-
-
-        manzana.style.fill = color;
 
     });
 
