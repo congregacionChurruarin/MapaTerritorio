@@ -347,7 +347,9 @@ function colorearPlano(svg, numeroPlano) {
             // TERRITORIOS:
             // solo pinta la primera coincidencia
 
-            coincidencias[0].style.fill = color;
+            coincidencias.forEach(manzana => {
+    manzana.style.fill = color;
+});
 
         } else {
 
