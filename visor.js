@@ -990,130 +990,62 @@ function detectarManzana(
     posicionX = null,
     posicionY = null
 ) {
-
-    const svg =
-        obtenerSVG();
+    const svg = obtenerSVG();
 
     if (!svg) return;
 
-
-    const svgElement =
-        svg.documentElement;
+    const svgElement = svg.documentElement;
 
     if (!svgElement) return;
 
+    // Obtener el objeto SVG del plano activo
+    const objeto = planoActivo === 1
+        ? objetoSVG1
+        : objetoSVG2;
 
-    const rectVisor =
-        visor.getBoundingClientRect();
+    const rect = objeto.getBoundingClientRect();
 
+    // Convertir el clic a coordenadas del SVG,
+    // deshaciendo el zoom y el desplazamiento.
+    const zoom = obtenerZoom();
 
-    const xVisor =
-        clientX -
-        rectVisor.left;
+    const punto = svgElement.createSVGPoint();
 
-    const yVisor =
-        clientY -
-        rectVisor.top;
+    punto.x = (clientX - rect.left) / zoom;
+    punto.y = (clientY - rect.top) / zoom;
 
+    // Revisar cada manzana en sus propias coordenadas
+    const elementos = svg.querySelectorAll(
+        "path[data-manzana]"
+    );
 
-    const xMapa =
-        (
-            xVisor -
-            obtenerDesplazamientoX()
-        ) /
-        obtenerZoom();
-
-
-    const yMapa =
-        (
-            yVisor -
-            obtenerDesplazamientoY()
-        ) /
-        obtenerZoom();
-
-
-    const punto =
-        svgElement.createSVGPoint();
-
-
-    const rectSVG =
-        svgElement.getBoundingClientRect();
-
-
-    punto.x =
-        xMapa +
-        rectSVG.left -
-        rectVisor.left;
-
-    punto.y =
-        yMapa +
-        rectSVG.top -
-        rectVisor.top;
-
-
-    const elementos =
-        svg.querySelectorAll(
-            "path[data-manzana]"
-        );
-
-
-    for (
-        const manzana of elementos
-    ) {
-
-        const matriz =
-            manzana.getScreenCTM();
+    for (const manzana of elementos) {
+        const matriz = manzana.getScreenCTM();
 
         if (!matriz) continue;
 
+        const puntoLocal = punto.matrixTransform(
+            matriz.inverse()
+        );
 
-        const puntoLocal =
-            punto.matrixTransform(
-                matriz.inverse()
+        if (manzana.isPointInFill(puntoLocal)) {
+            const nombre = manzana.getAttribute(
+                "data-manzana"
             );
 
-
-        if (
-            manzana.isPointInFill &&
-            manzana.isPointInFill(
-                puntoLocal
-            )
-        ) {
-
-            const nombre =
-                manzana.getAttribute(
-                    "data-manzana"
-                );
-
-
-            console.log(
-                "MANZANA CORRECTA:",
-                nombre
-            );
-
+            console.log("MANZANA DETECTADA:", nombre);
 
             mostrarInformacionManzana(
                 nombre,
-                posicionX !== null
-                    ? posicionX
-                    : clientX,
-                posicionY !== null
-                    ? posicionY
-                    : clientY
+                posicionX !== null ? posicionX : clientX,
+                posicionY !== null ? posicionY : clientY
             );
 
-
             return;
-
         }
-
     }
 
-
-    console.log(
-        "NO SE ENCONTRÓ MANZANA"
-    );
-
+    console.log("NO SE ENCONTRÓ MANZANA");
 }
 
 
